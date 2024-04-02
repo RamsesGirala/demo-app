@@ -10,10 +10,15 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PersonaMapper {
 
+    //Genera un metodo para mappear todos los atributos de la clase Persona a la Clase PersonaFullDto
     PersonaFullDto personaToPersonaFullDto(Persona persona);
 
+    //Genera un metodo para mappear todos los atributos de la clase PersonaFullDto a la Clase Persona
     Persona personaFullDtoToPersona(PersonaFullDto personaFullDto);
 
+    //Genera un metodo para mappear todos los atributos de la clase Persona a la Clase PersonaShortDto
+    //Ademas mappea el atributo 'provincia' dentro del objeto de domicilio asociado a dicha persona
+    //y lo agrega al atributo 'provincia' del Dto
     @Mapping(source = "domicilio.provincia", target = "provincia")
     PersonaShortDto personaToPersonaShortDto(Persona persona);
 
