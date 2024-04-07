@@ -3,6 +3,8 @@ package com.example.demoapp.presentation.advice;
 import com.example.demoapp.domain.dtos.ErrorDto;
 import com.example.demoapp.exceptions.EdadIncorrecta;
 import com.example.demoapp.exceptions.EntidadNoEncontrada;
+import com.example.demoapp.exceptions.FechaNacimientoPasada;
+import com.example.demoapp.exceptions.PersonaSinDomicilio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -56,4 +58,30 @@ public class AdviceController {
                         .build());
     }
 
+    //Metodo para manejar excepciones del tipo 'PersonaSinDomicilio'
+    @ExceptionHandler(value = PersonaSinDomicilio.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorDto> personaSinDomicilio(PersonaSinDomicilio e){
+        String errorMsg = e.getClass() + " : " + e.getMessage();
+        logger.error(errorMsg);
+        return ResponseEntity.internalServerError()
+                .body(ErrorDto.builder()
+                        .errorMsg(e.getErrorMsg())
+                        .codigo(e.getCODIGO())
+                        .errorClass(e.getClass().getSimpleName())
+                        .build());
+    }
+    //Metodo para manejar excepciones del tipo 'FechaNacimientoPasada'
+    @ExceptionHandler(value = FechaNacimientoPasada.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorDto> fechaNacimientoPasada(FechaNacimientoPasada e){
+        String errorMsg = e.getClass() + " : " + e.getMessage();
+        logger.error(errorMsg);
+        return ResponseEntity.internalServerError()
+                .body(ErrorDto.builder()
+                        .errorMsg(e.getErrorMsg())
+                        .codigo(e.getCODIGO())
+                        .errorClass(e.getClass().getSimpleName())
+                        .build());
+    }
 }

@@ -4,6 +4,8 @@ import com.example.demoapp.business.services.IPersonaService;
 import com.example.demoapp.domain.entities.Persona;
 import com.example.demoapp.exceptions.EdadIncorrecta;
 import com.example.demoapp.exceptions.EntidadNoEncontrada;
+import com.example.demoapp.exceptions.FechaNacimientoPasada;
+import com.example.demoapp.exceptions.PersonaSinDomicilio;
 import com.example.demoapp.repositories.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class PersonaService implements IPersonaService {
 
     @Override
     public Persona crear(Persona persona) {
-        validarFechaYEdad(persona);
+        validarCrearPersona(persona);
         return personaRepository.save(persona);
     }
 
@@ -31,8 +33,25 @@ public class PersonaService implements IPersonaService {
         return persona.get();
     }
 
+    private void validarCrearPersona(Persona persona){
+        validarPersonaConDomicilio(persona);
+        validarFechaYEdad(persona);
+        validarFechaNacimientoPasada(persona);
+    }
+
     private void validarFechaYEdad(Persona persona){
         int edadCalculada = Period.between(persona.getFechaNacimiento(), LocalDate.now()).getYears();
         if(edadCalculada != persona.getEdad()) throw new EdadIncorrecta(persona.getFechaNacimiento().toString(),persona.getEdad());
+    }
+
+    private void validarPersonaConDomicilio(Persona persona){
+        if(persona.getDomicilio() == null) throw new PersonaSinDomicilio();
+    }
+
+    private void validarFechaNacimientoPasada(Persona persona) {
+        LocalDate fechaLimite = LocalDate.now().minusYears(110);
+        if (persona.getFechaNacimiento().isBefore(fechaLimite)) {
+            throw new FechaNacimientoPasada();
+        }
     }
 }
